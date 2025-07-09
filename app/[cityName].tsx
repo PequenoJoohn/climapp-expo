@@ -1,14 +1,13 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const CityDetails = () => {
   const searchParams = useLocalSearchParams();
   const [cityDetails, setCityDetails] = useState(null);
-
-  console.log(searchParams);
+  const router = useRouter();
 
   const handleData = async () => {
     try {
@@ -18,8 +17,6 @@ const CityDetails = () => {
       const city = responseJSON.find(
         (cityData: any) => cityData.city === searchParams.cityName
       );
-
-      console.log(city);
 
       setCityDetails(city);
     } catch (error) {
@@ -31,15 +28,24 @@ const CityDetails = () => {
     handleData();
   }, []);
 
+  if (!cityDetails) {
+    return (
+      <LinearGradient
+        colors={["#00457d", "#05051f"]}
+        style={styles.container}
+      ></LinearGradient>
+    );
+  }
+
   return (
     <LinearGradient colors={["#00457d", "#05051f"]} style={styles.container}>
       <View>
-        <MaterialIcons
-          name="chevron-left"
-          size={24}
-          color={"#fff"}
+        <TouchableOpacity
+          onPress={() => router.back()}
           style={styles.headerIcon}
-        />
+        >
+          <MaterialIcons name="chevron-left" size={24} color={"#fff"} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>{cityDetails?.city}</Text>
       </View>
       <View style={styles.card}>
@@ -120,6 +126,7 @@ const styles = StyleSheet.create({
   headerIcon: {
     position: "absolute",
     left: 0,
+    zIndex: 10,
   },
   cardImage: {
     width: 72,
@@ -144,22 +151,22 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8
+    gap: 8,
   },
   rowTitle: {
     color: "#fff",
     fontSize: 16,
-    fontFamily: "Montserrat_600SemiBold"
-  }, 
+    fontFamily: "Montserrat_600SemiBold",
+  },
   rowValue: {
     color: "#fff",
     fontSize: 16,
     fontFamily: "Montserrat_400Regular",
-    marginLeft: "auto"
+    marginLeft: "auto",
   },
   rowBox: {
-    gap: 8
-  }
+    gap: 8,
+  },
 });
 
 export default CityDetails;
